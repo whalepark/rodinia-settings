@@ -88,6 +88,7 @@ CXXWARN_FLAGS := \
         -Wreturn-type \
         -Wno-unused-function \
         $(SPACE)
+
 CWARN_FLAGS := $(CXXWARN_FLAGS) \
         -Wstrict-prototypes \
         -Wmissing-prototypes \
@@ -125,7 +126,8 @@ endif
 CUBIN_ARCH_FLAG := -m32
 
 # detect if 32 bit or 64 bit system
-HP_64 = $(shell uname -m | grep 64)
+HP_64 =	$(shell uname -m | grep 64)
+
 # OpenGL is used or not (if it is used, then it is necessary to include GLEW)
 ifeq ($(USEGLLIB),1)
 
@@ -174,11 +176,7 @@ ifeq ($(USECUDPP), 1)
         endif
 endif
 
-
-
-
-
-
+# Libs
 LIB       := -L$(CUDA_INSTALL_PATH)/lib -L$(LIBDIR) -L$(COMMONDIR)/lib/$(OSLOWER)
 ifeq ($(USEDRVAPI),1)
    LIB += -lcuda ${OPENGLLIB} $(PARAMGLLIB) $(RENDERCHECKGLLIB) $(CUDPPLIB) ${LIB}
@@ -214,13 +212,13 @@ else
                 NVCCFLAGS   += -deviceemu
                 CUDACCFLAGS +=
                 BINSUBDIR   := emu$(BINSUBDIR)
-                # consistency, makes developing easier
-                CXXFLAGS                += -D__DEVICE_EMULATION__
-                CFLAGS                  += -D__DEVICE_EMULATION__
-        endif
-        TARGETDIR := $(BINDIR)/$(BINSUBDIR)
-        TARGET    := $(TARGETDIR)/$(EXECUTABLE)
-        LINKLINE  = $(LINK) -o $(TARGET) $(OBJS) $(LIB)
+		# consistency, makes developing easier
+		CXXFLAGS		+= -D__DEVICE_EMULATION__
+		CFLAGS			+= -D__DEVICE_EMULATION__
+	endif
+	TARGETDIR := $(BINDIR)/$(BINSUBDIR)
+	TARGET    := $(TARGETDIR)/$(EXECUTABLE)
+    LINKLINE  = $(LINK) -o $(TARGET) $(OBJS) $(LIB)
 endif
 
 # check if verbose
@@ -310,7 +308,7 @@ $(CUBINDIR)/%.cubin : $(SRCDIR)%.cu cubindirectory
 define SMVERSION_template
 OBJS += $(patsubst %.cu,$(OBJDIR)/%.cu_$(1)_o,$(notdir $(CUFILES_$(1))))
 $(OBJDIR)/%.cu_$(1)_o : $(SRCDIR)%.cu $(CU_DEPS)
-        $(VERBOSE)$(NVCC) -o $$@ -c $$< $(NVCCFLAGS) -arch $(1)
+	$(VERBOSE)$(NVCC) -o $$@ -c $$< $(NVCCFLAGS) -arch $(1)
 endef
 
 # This line invokes the above template for each arch version stored in
@@ -319,29 +317,26 @@ endef
 $(foreach smver,$(SM_VERSIONS),$(eval $(call SMVERSION_template,$(smver))))
 
 $(TARGET): makedirectories $(OBJS) $(CUBINS) Makefile
-        $(VERBOSE)$(LINKLINE)
+	$(VERBOSE)$(LINKLINE)
 
 cubindirectory:
-        $(VERBOSE)mkdir -p $(CUBINDIR)
+	$(VERBOSE)mkdir -p $(CUBINDIR)
 
 makedirectories:
-        $(VERBOSE)mkdir -p $(LIBDIR)
-        $(VERBOSE)mkdir -p $(OBJDIR)
-        $(VERBOSE)mkdir -p $(TARGETDIR)
+	$(VERBOSE)mkdir -p $(LIBDIR)
+	$(VERBOSE)mkdir -p $(OBJDIR)
+	$(VERBOSE)mkdir -p $(TARGETDIR)
 
 
 tidy :
-        $(VERBOSE)find . | egrep "#" | xargs rm -f
-        $(VERBOSE)find . | egrep "\~" | xargs rm -f
+	$(VERBOSE)find . | egrep "#" | xargs rm -f
+	$(VERBOSE)find . | egrep "\~" | xargs rm -f
 
 clean : tidy
-        $(VERBOSE)rm -f $(OBJS)
-        $(VERBOSE)rm -f $(CUBINS)
-        $(VERBOSE)rm -f $(TARGET)
-        $(VERBOSE)rm -f $(NVCC_KEEP_CLEAN)
+	$(VERBOSE)rm -f $(OBJS)
+	$(VERBOSE)rm -f $(CUBINS)
+	$(VERBOSE)rm -f $(TARGET)
+	$(VERBOSE)rm -f $(NVCC_KEEP_CLEAN)
 
 clobber : clean
-        $(VERBOSE)rm -rf $(ROOTOBJDIR)
-
-
-
+	$(VERBOSE)rm -rf $(ROOTOBJDIR)
