@@ -14,7 +14,7 @@ endif
 all: euler3d euler3d_double  pre_euler3d  pre_euler3d_double
 
 euler3d: euler3d.cu
-        nvcc $(KERNEL_DIM) -O2 -Xptxas -v --gpu-architecture=compute_60 --gpu-code=compute_60 euler3d
+            nvcc $(KERNEL_DIM) -O2 -Xptxas -v --gpu-architecture=compute_60 --gpu-code=compute_60 euler3d
 .cu -o euler3d -I$(CUDA_SDK_PATH)/common/inc  -L$(CUDA_SDK_PATH)/lib $(CUTIL_LIB)
 
 euler3d_double: euler3d_double.cu
